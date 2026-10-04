@@ -1,0 +1,12 @@
+$WorkspaceId = "99e48231-14de-4491-be4b-a0029bd665d7";
+$SharedKey = "aokZllpZUZATxXJI+WDWDnGuouxC9qwFDNYjttCfQy3nYCZ6wN6r0btjpxDiqjwL6YRSFe8kPWRGZTt4W7da2A==";
+$LogType = "PhishingTriage_CL";
+$json = '[{"SenderFromAddress":"linkedin@e.premium.liinkediin.com","SenderIPv4":"54.252.116.154","RecipientEmailAddress":"analyst@uts.local","Subject":"Sadat, thanks for being a valued member","DeliveryAction":"Delivered"},{"SenderFromAddress":"newsletter@official-news.com","SenderIPv4":"203.0.113.10","RecipientEmailAddress":"finance@uts.local","Subject":"Weekly Faculty Digest","DeliveryAction":"Delivered"}]';
+$body = [System.Text.Encoding]::UTF8.GetBytes($json);$date = [System.DateTime]::UtcNow.ToString("r");
+$stringToHash = "POST`n" + $body.Length + "`napplication/json`nx-ms-date:" + $date + "`n/api/logs";
+$bytesToHash = [System.Text.Encoding]::UTF8.GetBytes($stringToHash);$keyBytes = [System.Convert]::FromBase64String($SharedKey);$sha256 = New-Object System.Security.Cryptography.HMACSHA256;
+$sha256.Key =$keyBytes;
+$calculatedHash =$sha256.ComputeHash($bytesToHash);$encodedHash = [System.Convert]::ToBase64String($calculatedHash);$authorization = "SharedKey " + $WorkspaceId + ":" + $encodedHash;
+$headers = @{ "Authorization" = $authorization; "Log-Type" = $LogType; "x-ms-date" = $date };$uri = "https://$($WorkspaceId).ods.opinsights.azure.com/api/logs?api-version=2016-04-01";
+Invoke-RestMethod -Uri $uri -Method Post -ContentType "application/json" -Headers $headers -Body$body;
+Write-Host "Success: Telemetry ingested into Sentinel!" -ForegroundColor Green;
