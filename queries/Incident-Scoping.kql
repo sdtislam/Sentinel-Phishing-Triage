@@ -1,0 +1,10 @@
+Query 1 -  PhishingTriage_CL
+           | where SenderFromAddress_s has "liinkediin.com" or SenderIPv4_s == "54.252.116.154"
+           | project TimeGenerated, RecipientEmailAddress_s, Subject_s, SenderFromAddress_s, SenderIPv4_s, DeliveryAction_s
+
+Query 2- SigninLogs
+| where UserPrincipalName == "analyst@uts.local" 
+  and ResultType == "0" 
+  and Location != "AU"
+| project TimeGenerated, UserPrincipalName, IPAddress, Location, AppDisplayName
+
